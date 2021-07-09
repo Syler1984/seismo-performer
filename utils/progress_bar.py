@@ -223,7 +223,6 @@ class ProgressBar:
     def set_postfix(self, expression):
         self.set_postfix_expression(self, expression, clear_args = True)
 
-    # TODO: Also add ability to set only one keyword argument
     def set_prefix_kwargs(self, **kwargs):
         """
 
@@ -282,7 +281,7 @@ if __name__ == '__main__':
     bar = ProgressBar()
 
     bar.set_prefix_expression('[')
-    bar.set_postfix_expression(']')
+    bar.set_postfix_expression('] {outer} - {inner}')
 
     bar.progress_char_length = 60
     bar.set_max(outer_level = 20, inner_level = 50)
@@ -290,6 +289,10 @@ if __name__ == '__main__':
     for i in range(20):
 
         bar.set_progress(i, level = 'outer_level')
+        bar.set_postfix_arg('outer', i + 1)
+
         for j in range(10):
+
             bar.set_progress(j * 10, level = 'inner_level', percent = True)
+            bar.set_postfix_arg('inner', j + 1)
             bar.print()
