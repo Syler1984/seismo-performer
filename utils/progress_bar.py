@@ -7,7 +7,21 @@
 # TODO: Add call examples for every function
 
 class ProgressBar:
+
     def __init__(self):
+
+        self.progress_maxes = {}
+        self.progress = {}
+
+        self.progress_char = '#'
+        self.empty_char = '-'
+        self.progress_char_length = 30
+
+        self._prefix_expression = None
+        self._postfix_expression = None
+        self._prefix_kwargs = {}
+        self._postfix_kwargs = {}
+
     def __str__(self):
         """
         Renders progress bar as a string.
@@ -35,6 +49,20 @@ class ProgressBar:
         :param max_progress_dictionary: use if you want named progress levels
         :return: list of keywords for current progress levels
         """
+        if not len(max_progress) and not len(max_progress_dictionary):
+            return
+        if len(max_progress) and len(max_progress_dictionary):
+            raise AttributeError('max progress should be either all positional or all keyword arguments')
+
+        self.progress_maxes = {}
+
+        if len(max_progress):
+            for i, max_val in enumerate(max_progress):
+                self.progress_maxes[str(i)] = max_val
+        else:
+            self.progress_maxes = max_progress_dictionary
+
+        return self.progress_maxes.keys()
 
     # TODO: Add methods for removing particular levels
 
@@ -48,6 +76,50 @@ class ProgressBar:
         :param fraction:
         :param percent:
         """
+        if not len(progress):
+            return
+        if not level and len(progress) > 1:
+            raise AttributeError('multiple progress values with specified level are not compatible')
+        if not level and len(progress) != len(self.progress_maxes):
+            raise AttributeError(f'progress values count ({len(progress)}) should be equal'
+                                 f' to the number of progress levels ({len(self.progress_maxes)})')
+        if fraction and percent:
+            raise AttributeError('both fraction and percent could not be True simultaneously')
+
+        if not level:
+
+            self.progress = {}
+            for value, (level, max_progress) in zip(progress, self.progress_maxes.items()):
+                if fraction:
+                    value = min(value, 1.)
+                    self.progress[level] = value * max_progress
+                elif percent:
+                    value = min(value, 100.)
+                    self.progress[level] = (value * max_progress) / 100.
+                else:
+                    value = min(value, max_progress)
+                    self.progress[level] = value
+
+        else:
+
+            if level not in self.progress_maxes:
+                raise AttributeError(f'level {level} is not defined in progress maxes')
+            if type(level) is not str:
+                level = str(level)
+
+            value = progress[0]
+            max_progress = self.progress_maxes[level]
+
+            if fraction:
+                value = min(value, 1.)
+                self.progress[level] = value * max_progress
+            elif percent:
+                value = min(value, 100.)
+                self.progress[level] = (value * max_progress) / 100.
+            else:
+                value = min(value, max_progress)
+                self.progress[level] = value
+
 
     def set_progress_kwargs(self, fraction = False, percent = False, **progress):
         """
@@ -57,6 +129,24 @@ class ProgressBar:
         :param percent:
         :return:
         """
+        if not len(progress):
+            return
+
+        for level, value in progress.items():
+
+            if level not in self.progress_maxes:
+                raise AttributeError(f'level {level} is not defined in progress maxes')
+            max_progress = self.progress_maxes[level]
+
+            if fraction:
+                value = min(value, 1.)
+                self.progress[level] = value * max_progress
+            elif percent:
+                value = min(value, 100.)
+                self.progress[level] = (value * max_progress) / 100.
+            else:
+                value = min(value, max_progress)
+                self.progress[level] = value
 
     def set_prefix_expression(self, expression):
         """
@@ -67,6 +157,14 @@ class ProgressBar:
             if no formatting is needed).
         :return:
         """
+        if expression and type(expression) is not str:
+            raise TypeError('expression should be either string or None or False')
+        self._prefix_expression = expression
+
+    def set_postfix_expression(self, expression):
+        if expression and type(expression) is not str:
+            raise TypeError('expression should be either string or None or False')
+        self._postfix_expression = expression
 
     def set_prefix(self, expression):
         """
@@ -76,6 +174,12 @@ class ProgressBar:
         :param kwargs:
         :return:
         """
+        self._prefix_kwargs = {}
+        self.set_prefix_expression(self, expression)
+
+    def set_postfix(self, expression):
+        self._postfix_kwargs = {}
+        self.set_postfix_expression(self, expression)
 
     # TODO: Also add ability to set only one keyword argument
     def set_prefix_kwargs(self, **kwargs):
