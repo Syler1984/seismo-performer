@@ -1,6 +1,7 @@
 # Class for progress bar.
 # TODO: Add call examples for every function
 # TODO: Add ability to increment progress?
+# TODO: Add support for current progress character, e.g. [=======>....]. > is current progress character
 
 class ProgressBar:
 
@@ -124,6 +125,28 @@ class ProgressBar:
             self.progress_maxes = max_progress_dictionary
 
         return self.progress_maxes.keys()
+
+    def add_max(self, level, value, insert_after = None):
+        """
+        Adds new max progress level.
+        :param level:
+        :param value:
+        :param insert_after: str or None - if not specified, insert new level at the end of the list.
+        :return:
+        """
+        pass
+
+    def change_max(self, level, value):
+        """
+
+        :param level:
+        :param value:
+        :return:
+        """
+        if value < 0:
+            raise AttributeError('max value should be greater than zero')
+        if level in self.progress_maxes:
+            self.progress_maxes[level] = value
 
     def remove_progress_level(self, level):
         """

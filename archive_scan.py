@@ -176,9 +176,26 @@ if __name__ == '__main__':
         else:
             model = seismo_load.load_transformer(args.weights)
 
+    # Progress bar init
+    progress_bar = ProgressBar()
+
+    progress_bar.set_length(60)
+
+    progress_bar.set_empty_character('-')
+    progress_bar.set_progress_character('#')
+
+    progress_bar.set_prefix_expression('Archive {archive} out of {total_archives} [')
+    progress_bar.set_postfix_expression('] - Batch: {start} - {end}')
+
+    progress_bar.set_max(archives = len(archives), traces = 1., batches = 1., inter = 1.)
+
     # Main loop
     total_performance_time = 0.
+    progress_bar.set_prefix_arg('total_archives', len(archives))
     for n_archive, l_archives in enumerate(archives):
+
+        progress_bar.set_progress(n_archive, level = 'archives')
+        progress_bar.set_prefix_arg('archive', n_archive + 1)
 
         # Read data
         streams = []
@@ -223,8 +240,12 @@ if __name__ == '__main__':
             total_batch_count += batch_count
 
         # Predict
+        progress_bar.change_max('traces', n_traces)
+        progress_bar.set_progress(0, level = 'traces')
         current_batch_global = 0
         for i in range(n_traces):
+
+            progress_bar.set_progress(i, level = 'traces')
 
             traces = stools.get_traces(streams, i)
             original_traces = None
@@ -244,7 +265,11 @@ if __name__ == '__main__':
             freq = traces[0].stats.sampling_rate
             station = traces[0].stats.station
 
+            progress_bar.change_max('batches', batch_count)
+            progress_bar.set_progress(0, level = 'batches')
             for b in range(batch_count):
+
+                progress_bar.set_progress(b, level = 'batches')
 
                 detected_peaks = []
 
@@ -263,18 +288,12 @@ if __name__ == '__main__':
                                         for trace in original_traces]
 
                 # Progress bar
-
-                if args.time:
-                    stools.progress_bar(current_batch_global / total_batch_count, 40, add_space_around = False,
-                                        prefix = f'Group {n_archive + 1} out of {len(archives)} [',
-                                        postfix = f'] - Batch: {batches[0].stats.starttime} '
-                                                  f'- {batches[0].stats.endtime} '
-                                                  f'Time: {total_performance_time:.6} seconds')
-                else:
-                    stools.progress_bar(current_batch_global / total_batch_count, 40, add_space_around = False,
-                                        prefix = f'Group {n_archive + 1} out of {len(archives)} [',
-                                        postfix = f'] - Batch: {batches[0].stats.starttime}'
-                                                  f' - {batches[0].stats.endtime}')
+                # TODO: Implement --time support
+                progress_bar.set_postfix_arg('start', batches[0].stats.starttime)
+                progress_bar.set_postfix_arg('end', batches[0].stats.endtime)
+                progress_bar.print()
+                # f'Time: {total_performance_time:.6} seconds'
+                
                 current_batch_global += 1
 
                 scores, performance_time = stools.scan_traces(*batches,
