@@ -172,7 +172,7 @@ class ProgressBar:
         else:
 
             if level not in self.progress_maxes:
-                raise AttributeError(f'level {level} is not defined in progress maxes')
+                return
             if type(level) is not str:
                 level = str(level)
 
@@ -203,7 +203,7 @@ class ProgressBar:
         for level, value in progress.items():
 
             if level not in self.progress_maxes:
-                raise AttributeError(f'level {level} is not defined in progress maxes')
+                return
             max_progress = self.progress_maxes[level]
 
             if fraction:
