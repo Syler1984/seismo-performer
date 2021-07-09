@@ -223,3 +223,24 @@ class ProgressBar:
 
     def set_postfix_kwargs(self, **kwargs):
         pass
+
+
+# Progress bar test
+if __name__ == '__main__':
+
+    print('Simple progress bar test:')
+    bar = ProgressBar()
+
+    bar.set_prefix_expression('[')
+    bar.set_postfix_expression(']')
+
+    bar.progress_char_length = 60
+    bar.set_max(outer_level = 20, inner_level = 50)
+
+    for i in range(20):
+
+        bar.set_progress(i, level = 'outer_level')
+        for j in range(10):
+            bar.set_progress(j * 10, level = 'inner_level', percent = True)
+            bar.print()
+
