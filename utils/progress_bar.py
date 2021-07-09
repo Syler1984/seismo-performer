@@ -30,14 +30,14 @@ class ProgressBar:
         # Render prefix
         prefix = ''
         if self._prefix_expression and len(self._prefix_kwargs):
-            prefix = format(self._prefix_expression, **self._prefix_kwargs)
+            prefix = self._prefix_expression.format(**self._prefix_kwargs)
         elif self._prefix_expression:
             prefix = self._prefix_expression
 
         # Render postfix
         postfix = ''
         if self._postfix_expression and len(self._postfix_kwargs):
-            postfix = format(self._postfix_expression, **self._postfix_kwargs)
+            postfix = self._postfix_expression.format(**self._postfix_kwargs)
         elif self._postfix_expression:
             postfix = self._postfix_expression
 
@@ -189,7 +189,7 @@ class ProgressBar:
                 value = min(value, max_progress)
                 self.progress[level] = value
 
-    def set_prefix_expression(self, expression):
+    def set_prefix_expression(self, expression, clear_args = True):
         """
         Setter for the prefix expression.
         This expression will be used when printing the progress bar. Prefix keyword arguments will be used
@@ -200,34 +200,79 @@ class ProgressBar:
         """
         if expression and type(expression) is not str:
             raise TypeError('expression should be either string or None or False')
+        if clear_args:
+            self._prefix_kwargs = {}
         self._prefix_expression = expression
 
-    def set_postfix_expression(self, expression):
+    def set_postfix_expression(self, expression, clear_args = True):
         if expression and type(expression) is not str:
             raise TypeError('expression should be either string or None or False')
+        if clear_args:
+            self._prefix_kwargs = {}
         self._postfix_expression = expression
 
     def set_prefix(self, expression):
         """
         Sets prefix string. Note: if you want to use expression formating with dynamic parameters, use
         set_prefix_expression and set_prefix_kwargs instead.
-        :param args:
-        :param kwargs:
+        :param expression:
         :return:
         """
-        self._prefix_kwargs = {}
-        self.set_prefix_expression(self, expression)
+        self.set_prefix_expression(self, expression, clear_args = True)
 
     def set_postfix(self, expression):
-        self._postfix_kwargs = {}
-        self.set_postfix_expression(self, expression)
+        self.set_postfix_expression(self, expression, clear_args = True)
 
     # TODO: Also add ability to set only one keyword argument
     def set_prefix_kwargs(self, **kwargs):
-        pass
+        """
+
+        :param kwargs:
+        :return:
+        """
+        self._prefix_kwargs = kwargs
 
     def set_postfix_kwargs(self, **kwargs):
-        pass
+        """
+
+        :param kwargs:
+        :return:
+        """
+        self._postfix_kwargs = kwargs
+
+    def set_prefix_arg(self, name, value):
+        """
+
+        :param name:
+        :param value:
+        :return:
+        """
+        self._prefix_kwargs[name] = value
+
+    def set_postfix_arg(self, name, value):
+        """
+
+        :param name:
+        :param value:
+        :return:
+        """
+        self._postfix_kwargs[name] = value
+
+    def pop_prefix_arg(self, name):
+        """
+
+        :param name:
+        :return:
+        """
+        self._prefix_kwargs.pop(name, None)
+
+    def pop_postfix_arg(self, name):
+        """
+
+        :param name:
+        :return:
+        """
+        self._postfix_kwargs.pop(name, None)
 
 
 # Progress bar test
