@@ -103,8 +103,6 @@ class ProgressBar:
         print('\r' + ' ' * self._last_printed_line_length + '\r' + bar, sep = '', end = '', flush = True)
         self._last_printed_line_length = len(bar)
 
-    # TODO: Add methods for progress bar total length
-
     def set_max(self, *max_progress, **max_progress_dictionary):
         """
         Sets max progress values for progress bar rendering. Values can be int or float.
@@ -127,7 +125,15 @@ class ProgressBar:
 
         return self.progress_maxes.keys()
 
-    # TODO: Add methods for removing particular levels
+    def remove_progress_level(self, level):
+        """
+        Removes progress level data, max and value.
+        :param level: str - keyword for the progress level to remove.
+        """
+        if level in self.progress_maxes:
+            self.progress_maxes.pop(level, None)
+        if level in self.progress:
+            self.progress.pop(level, None)
 
     def set_progress(self, *progress, level = None,
                      fraction = False, percent = False):
@@ -311,31 +317,40 @@ class ProgressBar:
         self._postfix_kwargs.pop(name, None)
 
 
-# Progress bar test
+# Progress bar tests
 if __name__ == '__main__':
 
-    from time import sleep
+    from time import sleep, time
 
-    print('Simple progress bar test:')
+    # Prefix, postfix, multiple levels and level removal test
+    print('Simple progress bar and level removal test:')
     bar = ProgressBar()
 
-    bar.set_prefix_expression('[')
+    bar.set_prefix_expression('{time:2.2f} [')
     bar.set_postfix_expression('] {outer} - {inner}')
 
     bar.progress_char_length = 60
     bar.set_max(outer_level = 20, inner_level = 50)
 
+    start_time = time()
     for i in range(20):
 
         bar.set_progress(i, level = 'outer_level')
         bar.set_postfix_arg('outer', i + 1)
 
+        if i == 14:
+            bar.remove_progress_level('inner_level')
+            bar.set_postfix_expression('] {outer}')
+
         for j in range(100):
 
             bar.set_progress(j, level = 'inner_level', percent = True)
             bar.set_postfix_arg('inner', j + 1)
+            bar.set_prefix_arg('time', time() - start_time)
             bar.print()
 
             sleep(0.01)
 
+        bar.set_prefix_arg('time', time() - start_time)
+        bar.print()
         sleep(0.07)
