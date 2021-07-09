@@ -279,6 +279,8 @@ class ProgressBar:
 # Progress bar test
 if __name__ == '__main__':
 
+    from time import sleep
+
     print('Simple progress bar test:')
     bar = ProgressBar()
 
@@ -293,8 +295,12 @@ if __name__ == '__main__':
         bar.set_progress(i, level = 'outer_level')
         bar.set_postfix_arg('outer', i + 1)
 
-        for j in range(10):
+        for j in range(100):
 
-            bar.set_progress(j * 10, level = 'inner_level', percent = True)
+            bar.set_progress(j, level = 'inner_level', percent = True)
             bar.set_postfix_arg('inner', j + 1)
             bar.print()
+
+            sleep(0.01)
+
+        sleep(0.07)
