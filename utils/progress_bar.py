@@ -22,6 +22,8 @@ class ProgressBar:
         self._prefix_kwargs = {}
         self._postfix_kwargs = {}
 
+        self._last_printed_line_length = 0
+
     def __str__(self):
         """
         Renders progress bar as a string.
@@ -76,13 +78,13 @@ class ProgressBar:
             Does not change current progress if not specified. Default: None
         :return:
         """
-        # 1. Use *progress argument
-        # 2. Erase previous bar
-        # 3. Print the bar
-        print(self.__str__(), sep = '')
+        self.set_progress(*progress)
+
+        bar = self.__str__()
+        print('\r' + ' ' * self._last_printed_line_length + '\r' + bar, sep = '', end = '', flush = True)
+        self._last_printed_line_length = len(bar)
 
     # TODO: Add methods for progress bar total length
-    # TODO: Also add methods for string convertion
 
     def set_max(self, *max_progress, **max_progress_dictionary):
         """
