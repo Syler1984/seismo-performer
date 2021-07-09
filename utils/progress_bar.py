@@ -1,10 +1,6 @@
 # Class for progress bar.
-# Works like this:
-#  Initialize it.
-#  Then set progress change or value.
-#  Call render method.
-# Add ability for multi stage progress tracking, e.g. trace counts and progress within the trace.
 # TODO: Add call examples for every function
+# TODO: Add ability to increment progress?
 
 class ProgressBar:
 
@@ -198,6 +194,7 @@ class ProgressBar:
         if specified with the expression.format(prefix_keyword_args) like call.
         :param expression: expression string in Pythons format specification mini-language (or just plain string
             if no formatting is needed).
+        :param clear_args:
         :return:
         """
         if expression and type(expression) is not str:
@@ -207,6 +204,15 @@ class ProgressBar:
         self._prefix_expression = expression
 
     def set_postfix_expression(self, expression, clear_args = True):
+        """
+        Setter for the postfix expression.
+        This expression will be used when printing the progress bar. Postfix keyword arguments will be used
+        if specified with the expression.format(postfix_keyword_args) like call.
+        :param expression: expression string in Pythons format specification mini-language (or just plain string
+            if no formatting is needed).
+        :param clear_args:
+        :return:
+        """
         if expression and type(expression) is not str:
             raise TypeError('expression should be either string or None or False')
         if clear_args:
@@ -223,6 +229,12 @@ class ProgressBar:
         self.set_prefix_expression(self, expression, clear_args = True)
 
     def set_postfix(self, expression):
+        """
+        Sets postfix string. Note: if you want to use expression formating with dynamic parameters, use
+        set_postfix_expression and set_postfix_kwargs instead.
+        :param expression:
+        :return:
+        """
         self.set_postfix_expression(self, expression, clear_args = True)
 
     def set_prefix_kwargs(self, **kwargs):
