@@ -20,6 +20,29 @@ class ProgressBar:
 
         self._last_printed_line_length = 0
 
+    def set_length(self, length):
+        """
+        Set progress bar length (number of characters).
+        :param length:
+        """
+        if length < 0:
+            raise AttributeError('length should be positive')
+        self.progress_char_length = length
+
+    def set_empty_character(self, char):
+        """
+        Set displayed character (or string) for empty progress part of the bar.
+        :param char: str
+        """
+        self.empty_char = char
+
+    def set_progress_character(self, char):
+        """
+        Set displayed character (or string) for finished progress part of the bar.
+        :param char: str
+        """
+        self.progress_char = char
+
     def __str__(self):
         """
         Renders progress bar as a string.
