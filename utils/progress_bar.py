@@ -27,6 +27,40 @@ class ProgressBar:
         Renders progress bar as a string.
         :return: str
         """
+        prefix = ''
+        if self._prefix_expression and len(self._prefix_kwargs):
+            prefix = format(self._prefix_expression, **self._prefix_kwargs)
+        elif self._prefix_expression:
+            prefix = self._prefix_expression
+
+        postfix = ''
+        if self._postfix_expression and len(self._postfix_kwargs):
+            postfix = format(self._postfix_expression, **self._postfix_kwargs)
+        elif self._postfix_expression:
+            postfix = self._postfix_expression
+
+        bar = ''
+        current_progress_length = self.progress_char_length
+        nested_progress_positions = []
+        for level, max_progress in self.progress_maxes.items():
+
+            if level not in self.progress:
+                value = 0
+            else:
+                value = self.progress[level]
+
+            nested_progress_positions.append((value / max_progress) * current_progress_length)
+            current_progress_length = int(current_progress_length / max_progress)
+
+        for i in range(len(nested_progress_positions) - 1):
+            nested_progress_positions[i] = int(nested_progress_positions[i])
+        nested_progress_positions[-1] = round(nested_progress_positions[-1])
+
+        total_progress_chars = sum(nested_progress_positions)
+        bar = self.progress_char * total_progress_chars + \
+              self.empty_char * (self.progress_char_length - total_progress_chars)
+
+        return prefix + bar + postfix
 
     def print(self, *progress):
         """
@@ -39,6 +73,8 @@ class ProgressBar:
         # 1. Use *progress argument
         # 2. Erase previous bar
         # 3. Print the bar
+        print(self.__str__(), sep = '')
+
     # TODO: Add methods for progress bar total length
     # TODO: Also add methods for string convertion
 
