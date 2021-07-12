@@ -1,7 +1,6 @@
 # Class for progress bar.
 # TODO: Add call examples for every function
 # TODO: Add ability to increment progress?
-# TODO: Add support for current progress character, e.g. [=======>....]. > is current progress character
 
 class ProgressBar:
 
@@ -11,6 +10,7 @@ class ProgressBar:
         self.progress = {}
 
         self.progress_char = '#'
+        self.current_progress_char = '#'
         self.empty_char = '-'
         self.progress_char_length = 30
 
@@ -43,6 +43,14 @@ class ProgressBar:
         :param char: str
         """
         self.progress_char = char
+
+    def set_current_progress_char(self, char):
+        """
+
+        :param char:
+        :return:
+        """
+        self.current_progress_char = char
 
     def __str__(self):
         """
@@ -85,8 +93,12 @@ class ProgressBar:
 
         # Actual bar render
         total_progress_chars = sum(nested_progress_positions)
-        bar = self.progress_char * total_progress_chars + \
-              self.empty_char * (self.progress_char_length - total_progress_chars)
+        if total_progress_chars == self.progress_char_length:
+            bar = self.progress_char * total_progress_chars
+        else:
+            bar = self.progress_char * max(0, total_progress_chars - 1) + \
+                  self.current_progress_char + \
+                  self.empty_char * (self.progress_char_length - total_progress_chars)
 
         return prefix + bar + postfix  # concatenate the bar
 
@@ -347,7 +359,12 @@ if __name__ == '__main__':
 
     # Prefix, postfix, multiple levels and level removal test
     print('Simple progress bar and level removal test:')
+
     bar = ProgressBar()
+
+    bar.set_progress_character('=')
+    bar.set_current_progress_char('>')
+    bar.set_empty_character('.')
 
     bar.set_prefix_expression('{time:2.2f} [')
     bar.set_postfix_expression('] {outer} - {inner}')
