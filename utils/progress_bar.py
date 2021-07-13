@@ -1,6 +1,4 @@
 # Class for progress bar.
-# TODO: Add call examples for every function
-# TODO: Add ability to increment progress?
 
 class ProgressBar:
 
@@ -46,8 +44,8 @@ class ProgressBar:
 
     def set_current_progress_char(self, char):
         """
-
-        :param char:
+        Set character for (or string) current progress identification.
+        :param char: str
         :return:
         """
         self.current_progress_char = char
@@ -104,7 +102,7 @@ class ProgressBar:
 
     def print(self, *progress):
         """
-
+        Prints the bar to stdout.
         :param progress: indicates progress if specified, equal to calling set_progress without level
             (with single progress value or set of values for multiple levels) before print.
             Does not change current progress if not specified. Default: None
@@ -150,7 +148,7 @@ class ProgressBar:
 
     def change_max(self, level, value):
         """
-
+        Change max progress for particular progress level.
         :param level:
         :param value:
         :return:
@@ -230,7 +228,6 @@ class ProgressBar:
         :param progress:
         :param fraction:
         :param percent:
-        :return:
         """
         if not len(progress):
             return
@@ -259,7 +256,6 @@ class ProgressBar:
         :param expression: expression string in Pythons format specification mini-language (or just plain string
             if no formatting is needed).
         :param clear_args:
-        :return:
         """
         if expression and type(expression) is not str:
             raise TypeError('expression should be either string or None or False')
@@ -275,7 +271,6 @@ class ProgressBar:
         :param expression: expression string in Pythons format specification mini-language (or just plain string
             if no formatting is needed).
         :param clear_args:
-        :return:
         """
         if expression and type(expression) is not str:
             raise TypeError('expression should be either string or None or False')
@@ -288,7 +283,6 @@ class ProgressBar:
         Sets prefix string. Note: if you want to use expression formating with dynamic parameters, use
         set_prefix_expression and set_prefix_kwargs instead.
         :param expression:
-        :return:
         """
         self.set_prefix_expression(self, expression, clear_args = True)
 
@@ -297,59 +291,54 @@ class ProgressBar:
         Sets postfix string. Note: if you want to use expression formating with dynamic parameters, use
         set_postfix_expression and set_postfix_kwargs instead.
         :param expression:
-        :return:
         """
         self.set_postfix_expression(self, expression, clear_args = True)
 
     def set_prefix_kwargs(self, **kwargs):
         """
-
+        Set prefix keyword arguments
         :param kwargs:
-        :return:
         """
         self._prefix_kwargs = kwargs
 
     def set_postfix_kwargs(self, **kwargs):
         """
-
+        Set postfix keyword arguments
         :param kwargs:
-        :return:
         """
         self._postfix_kwargs = kwargs
 
     def set_prefix_arg(self, name, value):
         """
-
-        :param name:
+        Set one prefix keyword argument by its keyword
+        :param name: str - keyword
         :param value:
-        :return:
         """
         self._prefix_kwargs[name] = value
 
     def set_postfix_arg(self, name, value):
         """
-
-        :param name:
+        Set one postfix keyword argument by its keyword
+        :param name: str - keyword
         :param value:
-        :return:
         """
         self._postfix_kwargs[name] = value
 
     def pop_prefix_arg(self, name):
         """
-
-        :param name:
-        :return:
+        Pop prefix argument by its keyword (name)
+        :param name: str - keyword
+        :return: argument value or None
         """
-        self._prefix_kwargs.pop(name, None)
+        return self._prefix_kwargs.pop(name, None)
 
     def pop_postfix_arg(self, name):
         """
-
-        :param name:
-        :return:
+        Pop postfix argument by its keyword (name)
+        :param name: str - keyword
+        :return: argument value or None
         """
-        self._postfix_kwargs.pop(name, None)
+        return self._postfix_kwargs.pop(name, None)
 
 
 # Progress bar tests
